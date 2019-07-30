@@ -42,10 +42,13 @@ export class DataService {
 
     getConfig(refresh:boolean = false){
         if (refresh || !this.configData$){
-            this.configData$ = this.http.get("./assets/config.json");
+            console.log("getting config");
+            this.configData$ = this.http.get("/splunkd/__raw/services/attck/app_config");
+            //this.configData$ = this.http.get("./assets/config.json");
         }
         return this.configData$;
     }
+
 
     getEnterpriseData(refresh: boolean = false, useTAXIIServer: boolean = false){
         if (useTAXIIServer) {

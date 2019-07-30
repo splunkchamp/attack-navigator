@@ -494,6 +494,40 @@ export class TabsComponent implements AfterContentInit {
     }
 
 
+    /**
+     * attempt to reload the existing layer with updates that might have occured via
+     * another process. champ
+     */
+
+    reloadLayerFromURL(loadURL, currVm): void {
+        // if (!loadURL.startsWith("http://") && !loadURL.startsWith("https://") && !loadURL.startsWith("FTP://")) loadURL = "https://" + loadURL;
+        this.http.get(loadURL).subscribe((res) => {
+            //openTab(title: string, template, data, isCloseable = false, replace = true, forceNew = false, dataTable = false)
+            let viewModel = currVm;
+            try {
+                viewModel.deSerialize(res)
+                console.log(loadURL, viewModel);
+                this.openTab(currVm.name, this.layerTab, viewModel, true, true, false, true)
+            } catch(err) {
+                console.log(err)
+                alert("ERROR: Failed to load layer file from URL")
+                this.viewModelsService.destroyViewModel(viewModel)
+            }
+        }, (err) => {
+            console.error(err)
+            if (err.status == 0) {
+                // no response
+                alert("ERROR: no HTTP response from " + loadURL)
+            } else {
+                // response, but not a good one
+                alert("ERROR: HTTP response " + err.status + " ("+err.statusText+") for URL " + err.url)
+            }
+
+        })
+
+    }
+
+
     //   ___ _   _ ___ _____ ___  __  __ ___ _______ ___    _  _   ___   _____ ___   _ _____ ___  ___   ___ _____ _   _ ___ ___
     //  / __| | | / __|_   _/ _ \|  \/  |_ _|_  / __|   \  | \| | /_\ \ / /_ _/ __| /_\_   _/ _ \| _ \ / __|_   _| | | | __| __|
     // | (__| |_| \__ \ | || (_) | |\/| || | / /| _|| |) | | .` |/ _ \ V / | | (_ |/ _ \| || (_) |   / \__ \ | | | |_| | _|| _|

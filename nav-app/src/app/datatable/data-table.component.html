@@ -351,6 +351,16 @@
                  </div>
              </div>
 
+            <!-- reload mode -->
+            <div *ngIf="configService.getFeature('toggle_view_mode')" class="control-row-item">
+                <div class="control-row-button noselect"
+                     (click)="reloadLayerFile()"
+                     matTooltipPosition="below"
+                     matTooltip="auto-refresh">
+                      <img [src]="['assets/icons/ic_refresh_lg_off_24px.svg','assets/icons/ic_refresh_lg_on_24px.svg'][viewModel.refresh]" [alt]="['off','on']['viewModel.refresh']"/>
+                 </div>
+             </div>
+
         </li>
         <li *ngIf="configService.getFeatureGroup('technique_controls', 'any') && configService.getFeature('selecting_techniques')">
             <div *ngIf="configService.getFeatureGroupCount('technique_controls') >= 3" class="section-label">

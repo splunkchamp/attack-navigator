@@ -222,7 +222,6 @@ export class ViewModelsService {
             result.legendItems = JSON.parse(JSON.stringify(legendItems.legendItems));
         }
 
-        console.log(result);
         
         result.name = layerName;
         // console.log(result)
@@ -418,6 +417,13 @@ export class ViewModel {
      * 2: mini table
      */
     viewMode: number = 0;
+
+    /*
+     * refresh int meanings
+     * 0: off
+     * 1: on
+     */
+    refresh: number = 0;
 
 
     hideDisabled: boolean = false; //are disabled techniques hidden?

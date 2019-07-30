@@ -703,6 +703,7 @@ export class ExportData {
             }
         }
 
+
         this.tableConfig = {
             "width": 11,
             "height": 8.5,

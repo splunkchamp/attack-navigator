@@ -11,12 +11,14 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatMenuTrigger} from '@angular/material/menu';
 import * as Excel from 'exceljs/dist/es5/exceljs.browser';
 import * as is from 'is_js';
+import { Observable } from 'rxjs/Observable';
 
 declare var tinygradient: any; //use tinygradient
 declare var tinycolor: any; //use tinycolor2
 
 import * as FileSaver from 'file-saver';
 import { ColorPickerModule } from 'ngx-color-picker';
+import { config } from 'rxjs';
 
 @Component({
     selector: 'DataTable',
@@ -60,6 +62,8 @@ export class DataTableComponent implements AfterViewInit {
     customContextMenuItems = [];
 
     showingLegend = false;
+
+    refresh = 0;
 
 
     // The ViewModel being used by this data-table
@@ -311,6 +315,16 @@ export class DataTableComponent implements AfterViewInit {
     }
 
     /////////////////////////////
+    //     RELOAD LAYER REG    //
+    /////////////////////////////
+    reloadLayerFile() {
+        console.log("clicked refresh")
+        this.viewModel.refresh = (this.viewModel.refresh +1) %2
+
+    }
+
+
+    /////////////////////////////
     //     EXPORT TO EXCEL     //
     /////////////////////////////
 
@@ -416,11 +430,56 @@ export class DataTableComponent implements AfterViewInit {
 
     /**
      * Angular lifecycle hook
+     * 
      */
     ngAfterViewInit(): void {
         let element = <HTMLElement>document.getElementById("tooltip" + this.viewModel.uid);
         element.style.left = -10000 + "px";
+        this.asyncObservable().subscribe((config: Object) => {config})
     }
+
+    /**
+     * CHAMP - using obserables to grab our
+     * config every 5 seconds
+     * if the refresh button is enabled
+    */
+
+   asyncObservable() {
+       return new Observable(observer => {
+         setInterval(() => {
+            if(this.viewModel.refresh == 1){
+                this.ds.getConfig(true).subscribe((config: Object) => {
+                    this.ds.setUpURLs(config["enterprise_attack_url"],
+                                        config["pre_attack_url"],
+                                        config["mobile_data_url"],
+                                        config["taxii_server"]["enabled"],
+                                        config["taxii_server"]["url"],
+                                        config["taxii_server"]["collections"]);
+                    //var domain = config["domain"];
+                    console.log(config["default_layers"]["urls"][0]);
+                    this.tabs.reloadLayerFromURL(config["default_layers"]["urls"][0],this.viewModel);
+                    /**
+                    if(domain === "mitre-enterprise"){
+                        this.ds.getEnterpriseData(true, config["taxii_server"]["enabled"]).subscribe((enterpriseData: Object[]) => {
+                            // let bundle = enterpriseData[1]["objects"].concat(enterpriseData[0]["objects"]);
+                            this.parseBundle(enterpriseData);
+        
+                        });
+                    } else if (domain === "mitre-mobile"){
+                        this.ds.getMobileData(true, config["taxii_server"]["enabled"]).subscribe((mobileData: Object[]) => {
+                            // let bundle = mobileData[1]["objects"].concat(mobileData[0]["objects"]);
+                            this.parseBundle(mobileData);
+                        });
+                    }
+                     */
+                });
+
+            };
+
+         }, 5000)
+       })
+   }
+   
 
     
     ////////////////////////////////////////////////////
@@ -901,6 +960,7 @@ export class DataTableComponent implements AfterViewInit {
         }
 
         theclass += [" full", " compact", " mini"][this.viewModel.viewMode]
+        theclass += ["off","on"][this.viewModel.refresh]
         if (this.viewModel.getTechniqueVM(technique.technique_tactic_union_id).comment.length > 0)
             theclass += " has-comment"
         if (this.getTechniqueBackground(technique))
