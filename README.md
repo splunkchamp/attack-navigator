@@ -183,3 +183,21 @@ limitations under the License.
 This project makes use of ATT&CK<sup>™</sup>
 
 [ATT&CK Terms of Use](https://attack.mitre.org/resources/terms-of-use/)
+
+## Splunk
+Some of the code has been modified in support of the following project:
+[SA-attck_nav](https://github.com/daveherrald/SA-attck_nav)
+
+Specifically, the following features were added:
+1. Loading the configuration file from a Splunk custom rest handler
+    * data.service.ts
+
+2. A refresh button that reloads the configuration and layer every 5 seconds
+    * data-table.component.html
+    * data-table.component.ts
+    * exporter.component.ts
+    * tabs.component.ts
+    * viewmodels.service.ts
+
+
+
